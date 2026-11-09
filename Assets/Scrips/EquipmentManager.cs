@@ -5,7 +5,10 @@ public class EquipmentManager : MonoBehaviour
     public enum ToolType
     {
         FlySwatter,
-        RepairTape
+        RepairTape,
+        ElectricRacket, // ปลดล็อก LV 3
+        BugSpray,       // ปลดล็อก LV 5
+        MosquitoCoil    // ปลดล็อก LV 8
     }
 
     public static EquipmentManager Instance { get; private set; }
@@ -66,22 +69,34 @@ public class EquipmentManager : MonoBehaviour
         {
             SelectTool(ToolType.RepairTape);
         }
+
+        // ปุ่ม 3-5 = อุปกรณ์ที่ปลดล็อกด้วยเลเวล (ดู ToolCatalog)
+        foreach (ToolDefinition def in ToolCatalog.All)
+        {
+            if (def.tool == ToolType.FlySwatter || def.tool == ToolType.RepairTape)
+                continue;
+
+            if (Input.GetKeyDown(def.key))
+                SelectTool(def.tool);
+        }
     }
 
     public void SelectTool(ToolType tool)
     {
+        // Unlock item with LV: ยังไม่ถึงเลเวล เลือกไม่ได้
+        if (!ToolCatalog.IsUnlocked(tool))
+        {
+            ToolDefinition locked = ToolCatalog.Get(tool);
+            ProgressHUD.Toast(locked.displayName + " unlocks at LV " + locked.requiredLevel);
+            return;
+        }
+
         SelectedTool = tool;
 
         UpdateEquipmentUI();
 
-        if (tool == ToolType.FlySwatter)
-        {
-            Debug.Log("เลือกอุปกรณ์: ไม้ตียุง");
-        }
-        else
-        {
-            Debug.Log("เลือกอุปกรณ์: เทปซ่อมกระจก");
-        }
+        ToolDefinition def = ToolCatalog.Get(tool);
+        Debug.Log("เลือกอุปกรณ์: " + (def != null ? def.displayName : tool.ToString()));
     }
 
     private void UpdateEquipmentUI()
@@ -110,9 +125,10 @@ public class EquipmentManager : MonoBehaviour
             return 1;
         }
 
+        // Upgrade: Strong Tape
         return Mathf.Max(
             1,
-            Instance.tapeRepairAmount
+            UpgradeStats.TapeRepair(Instance.tapeRepairAmount)
         );
     }
 }

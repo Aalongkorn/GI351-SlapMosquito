@@ -37,6 +37,9 @@ public class ComicCameraController : MonoBehaviour
 
     private bool isPlaying;
 
+    // ให้ ShopMenu รู้ว่ากำลังเล่นคัตซีนอยู่ (จะซ่อนปุ่มร้านค้า)
+    public bool IsPlaying => isPlaying;
+
     private Vector2 originalPosition;
     private Vector3 originalScale;
 

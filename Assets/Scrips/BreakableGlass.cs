@@ -118,6 +118,9 @@ public class BreakableGlass : MonoBehaviour
         originalSprite = glassRenderer.sprite;
         originalPosition = transform.localPosition;
 
+        // Upgrade: Tough Glass
+        maxHP = UpgradeStats.GlassMaxHP(maxHP);
+
         currentHP = maxHP;
         mainCamera = Camera.main;
 
@@ -144,6 +147,13 @@ public class BreakableGlass : MonoBehaviour
             EquipmentManager.ToolType.RepairTape)
         {
             StartRepairAtMousePosition();
+            return;
+        }
+
+        // อุปกรณ์ใหม่ (ปุ่ม 3-5) ไม่ทำดาเมจกระจก
+        if (EquipmentManager.SelectedTool !=
+            EquipmentManager.ToolType.FlySwatter)
+        {
             return;
         }
 

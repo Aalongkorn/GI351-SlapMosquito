@@ -677,6 +677,33 @@ public class Mosquito : MonoBehaviour
             return;
         }
 
+        Kill();
+    }
+
+    /// <summary>
+    /// ให้อุปกรณ์อื่นฆ่ายุงตัวนี้ (เช่น Electric Racket ใน ToolEffects)
+    /// คืนค่า true ถ้าฆ่าสำเร็จ
+    /// </summary>
+    public bool KillByTool()
+    {
+        if (GetComponent<BossMosquito>() != null)
+            return false;
+
+        if (alreadyHit || state == MosquitoState.Dead)
+            return false;
+
+        if (SlotEventManager.Instance != null &&
+            SlotEventManager.Instance.IsEventRunning)
+        {
+            return false;
+        }
+
+        Kill();
+        return true;
+    }
+
+    private void Kill()
+    {
         alreadyHit = true;
         // เล่นเสียงตอนตียุง
         if (audioSource != null && hitSound != null)

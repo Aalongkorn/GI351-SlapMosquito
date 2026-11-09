@@ -82,6 +82,9 @@ public class SlotEventManager : MonoBehaviour
         }
 
         Instance = this;
+
+        // Upgrade: Lucky Lever
+        winRate = UpgradeStats.SlotWinRate(winRate);
     }
 
     private void Start()

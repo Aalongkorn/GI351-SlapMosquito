@@ -52,6 +52,15 @@ public class BossMosquito : MonoBehaviour
 {
     public event Action<BossMosquito> Defeated;
 
+    // ยิงเมื่อบอสตัวไหนก็ได้ตาย (ใช้ให้ Boss Token)
+    public static event Action<BossMosquito> AnyDefeated;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticEvents()
+    {
+        AnyDefeated = null;
+    }
+
     private BossSettings s;
     private GameObject minionPrefab;
 
@@ -383,8 +392,8 @@ public class BossMosquito : MonoBehaviour
             ComboManager.Instance.RegisterBossHit(this);
         }
 
-        // ลด HP บอสตามระบบเดิม
-        currentHP--;
+        // ลด HP บอส (Upgrade: Heavy Swatter เพิ่มดาเมจ)
+        currentHP -= UpgradeStats.BossDamage;
 
         // เอฟเฟกต์กระพริบเมื่อถูกตี
         PlayFlash();
@@ -443,6 +452,7 @@ public class BossMosquito : MonoBehaviour
         TrySetTrigger("Dead");
 
         Defeated?.Invoke(this);
+        AnyDefeated?.Invoke(this);
 
         Destroy(gameObject, s.deadDuration);
     }

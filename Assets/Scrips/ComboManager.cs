@@ -82,6 +82,9 @@ public class ComboManager : MonoBehaviour
 
         Instance = this;
 
+        // Upgrade: Combo Focus
+        comboTimeLimit = UpgradeStats.ComboTime(comboTimeLimit);
+
         if (popupRoot != null)
         {
             originalPosition = popupRoot.anchoredPosition;

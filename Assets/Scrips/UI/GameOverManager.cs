@@ -19,6 +19,8 @@ public class GameOverManager : MonoBehaviour
     public string gameplayObjectTag = "GameplayObject";
 
     private bool isGameOver = false;
+    private RunResult lastRun;
+    private bool hasRunResult;
 
     private void Start()
     {
@@ -57,7 +59,12 @@ public class GameOverManager : MonoBehaviour
         // 5. ลบวัตถุเกมเพลย์ตาม Tag
         ClearGameplayObjects();
 
-        // 6. อัปเดตคะแนนบนหน้า Game Over
+        // 6. แปลงคะแนนเป็น XP แล้วบันทึกเงิน/เลเวล (Progression)
+        int score = ScoreManager.Instance != null ? ScoreManager.Instance.totalScore : 0;
+        lastRun = RunRewardTracker.CompleteRun(score);
+        hasRunResult = true;
+
+        // อัปเดตคะแนนบนหน้า Game Over
         UpdateFinalScore();
 
         // 7. แสดงหน้า Game Over
@@ -88,6 +95,11 @@ public class GameOverManager : MonoBehaviour
         }
 
         finalScoreText.text = "SCORE: " + ScoreManager.Instance.totalScore;
+
+        if (hasRunResult)
+        {
+            finalScoreText.text += "\n+" + lastRun.xpGained + " XP";
+        }
     }
 
     private void StopAllSpawners()
@@ -164,6 +176,13 @@ public class GameOverManager : MonoBehaviour
                 Destroy(obj);
             }
         }
+    }
+
+    /// <summary>กลับไปเมนูหลัก (เพื่อเข้าร้านค้า) ผูกกับปุ่มใน Inspector ได้</summary>
+    public void BackToMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(ProgressionBootstrap.MenuSceneName);
     }
 
     public void RestartGame()
